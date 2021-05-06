@@ -41,8 +41,6 @@ class ExamenServiceImplTest {
         List<Examen> datos = Collections.emptyList();
         when(repository.findAll()).thenReturn(datos);
         Optional<Examen> examen = service.findExamenPorNombre("Matematicas");
-        assertTrue(examen.isPresent());
-        assertEquals(5L, examen.orElseThrow());
-        assertEquals("Matematicas", examen.get().getNombre());
+        assertFalse(examen.isPresent());
     }
 }
