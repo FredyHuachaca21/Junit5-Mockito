@@ -3,6 +3,7 @@ package com.pe.ehuachaca.mockito.services;
 import com.pe.ehuachaca.mockito.models.Examen;
 import com.pe.ehuachaca.mockito.repository.ExamenRepository;
 import com.pe.ehuachaca.mockito.repository.ExamenRepositoryOther;
+import com.pe.ehuachaca.mockito.repository.PreguntaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.*;
@@ -18,13 +19,15 @@ class ExamenServiceImplTest {
 
     ExamenRepository repository;
     ExamenService service;
+    PreguntaRepository preguntaRepository;
 
     /*Se ejecuta antes de cada prueba*/
     @BeforeEach
     void setUp() {
         //ExamenRepository repository = new ExamenRepositoryImpl();
         repository = mock(ExamenRepositoryOther.class);
-        service = new ExamenServiceImpl(repository);
+        preguntaRepository = mock(PreguntaRepository.class);
+        service = new ExamenServiceImpl(repository, preguntaRepository);
     }
 
     @Test
