@@ -3,6 +3,7 @@ package com.pe.ehuachaca.mockito.services;
 import com.pe.ehuachaca.mockito.models.Examen;
 import com.pe.ehuachaca.mockito.repository.ExamenRepository;
 import com.pe.ehuachaca.mockito.repository.ExamenRepositoryOther;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.*;
 
@@ -15,12 +16,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ExamenServiceImplTest {
 
+    ExamenRepository repository;
+    ExamenService service;
+
+    /*Se ejecuta antes de cada prueba*/
+    @BeforeEach
+    void setUp() {
+        //ExamenRepository repository = new ExamenRepositoryImpl();
+        repository = mock(ExamenRepositoryOther.class);
+        service = new ExamenServiceImpl(repository);
+    }
+
     @Test
     void findExamenPorNombre() {
-        //ExamenRepository repository = new ExamenRepositoryImpl();
-        ExamenRepository repository = mock(ExamenRepositoryOther.class);
-        ExamenService service = new ExamenServiceImpl(repository);
-
         List<Examen> datos = Arrays.asList(
                 new Examen(5L, "Matematicas"),
                 new Examen(6L, "Lenguaje"),
@@ -34,10 +42,6 @@ class ExamenServiceImplTest {
 
     @Test
     void findExamenPorNombreListaVacia() {
-        //ExamenRepository repository = new ExamenRepositoryImpl();
-        ExamenRepository repository = mock(ExamenRepositoryOther.class);
-        ExamenService service = new ExamenServiceImpl(repository);
-
         List<Examen> datos = Collections.emptyList();
         when(repository.findAll()).thenReturn(datos);
         Optional<Examen> examen = service.findExamenPorNombre("Matematicas");
