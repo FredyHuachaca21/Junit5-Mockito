@@ -57,4 +57,31 @@ class ExamenServiceImplTest {
         assertEquals(5, examen.getPreguntas().size());
         assertTrue(examen.getPreguntas().contains("trigonometría"));
     }
+
+    @Test
+    void testPreguntasExamenVerify() {
+        when(repository.findAll()).thenReturn(Datos.EXAMENES);
+        when(preguntaRepository.findPreguntasPorExamenid(5L)).thenReturn(Datos.PREGUNTAS);
+        /*Otra alternativa de obtener o validar el ID*/
+        when(preguntaRepository.findPreguntasPorExamenid(anyLong())).thenReturn(Datos.PREGUNTAS);
+        Examen examen = service.findExamenPorNombreConPreguntas("Matematicas");
+        assertEquals(5, examen.getPreguntas().size());
+        assertTrue(examen.getPreguntas().contains("trigonometría"));
+        verify(repository).findAll();
+        verify(preguntaRepository).findPreguntasPorExamenid(anyLong());
+        verify(preguntaRepository).findPreguntasPorExamenid(5L);
+    }
+
+    /*Forzando la falla*/
+    @Test
+    void testNoExisteExamenVerify() {
+        when(repository.findAll()).thenReturn(Collections.emptyList());
+        when(preguntaRepository.findPreguntasPorExamenid(5L)).thenReturn(Datos.PREGUNTAS);
+        when(preguntaRepository.findPreguntasPorExamenid(anyLong())).thenReturn(Datos.PREGUNTAS);
+        Examen examen = service.findExamenPorNombreConPreguntas("Matematicas");
+        assertNull(examen);
+        verify(repository).findAll();
+        verify(preguntaRepository).findPreguntasPorExamenid(anyLong());
+        verify(preguntaRepository).findPreguntasPorExamenid(5L);
+    }
 }
