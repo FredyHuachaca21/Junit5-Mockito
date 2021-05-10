@@ -6,6 +6,7 @@ import com.pe.ehuachaca.mockito.repository.PreguntaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -158,5 +159,46 @@ class ExamenServiceImplTest {
 //        verify(preguntaRepository).findPreguntasPorExamenid(argThat(arg-> arg != null && arg.equals(5L)));
 //        verify(preguntaRepository).findPreguntasPorExamenid(eq(5L));
         verify(preguntaRepository).findPreguntasPorExamenid(argThat(arg-> arg != null && arg >=2L));
+    }
+
+    @Test
+    void testArgumentMatchers2() {
+        /*Para que pase la prueba del test se debe cambiar con datos positovos*/
+        when(repository.findAll()).thenReturn(Datos.EXAMENES_ID_NEGATIVOS);
+        when(preguntaRepository.findPreguntasPorExamenid(anyLong())).thenReturn(Datos.PREGUNTAS);
+        service.findExamenPorNombreConPreguntas("Matematicas");
+
+        verify(repository).findAll();
+        verify(preguntaRepository).findPreguntasPorExamenid(argThat(new MiArgsMatchers()));
+    }
+
+    @Test
+    void testArgumentMatchers3() {
+        when(repository.findAll()).thenReturn(Datos.EXAMENES_ID_NEGATIVOS);
+        /*Para que pase la prueba se debe cambiar con datos positovos*/
+//        when(repository.findAll()).thenReturn(Datos.EXAMENES);
+        when(preguntaRepository.findPreguntasPorExamenid(anyLong())).thenReturn(Datos.PREGUNTAS);
+        service.findExamenPorNombreConPreguntas("Matematicas");
+
+        verify(repository).findAll();
+        verify(preguntaRepository).findPreguntasPorExamenid(argThat((args) -> args != null && args >0));
+    }
+
+    public static class MiArgsMatchers implements ArgumentMatcher<Long>{
+
+        private Long argumento;
+
+        @Override
+        public boolean matches(Long aLong) {
+            this.argumento = aLong;
+            return aLong != null && aLong >0;
+        }
+
+        @Override
+        public String toString() {
+            return "Es para un mensaje personalizado de error que imprime mockito en caso que falle el test " +
+                    argumento +
+                    " debe ser un entero posito";
+        }
     }
 }
