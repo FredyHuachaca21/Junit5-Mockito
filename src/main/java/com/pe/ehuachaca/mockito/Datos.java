@@ -1,4 +1,4 @@
-package com.pe.ehuachaca.mockito.services;
+package com.pe.ehuachaca.mockito;
 
 import com.pe.ehuachaca.mockito.models.Examen;
 

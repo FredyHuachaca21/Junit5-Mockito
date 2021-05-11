@@ -1,9 +1,11 @@
 package com.pe.ehuachaca.mockito.services;
 
+import com.pe.ehuachaca.mockito.Datos;
 import com.pe.ehuachaca.mockito.models.Examen;
 import com.pe.ehuachaca.mockito.repository.ExamenRepository;
-import com.pe.ehuachaca.mockito.repository.ExamenRepositoryImpl;
+import com.pe.ehuachaca.mockito.repositoryImpl.ExamenRepositoryImpl;
 import com.pe.ehuachaca.mockito.repository.PreguntaRepository;
+import com.pe.ehuachaca.mockito.repositoryImpl.PreguntaRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +16,7 @@ import org.mockito.stubbing.Answer;
 
 import static org.mockito.Mockito.*;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -24,10 +27,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class ExamenServiceImplTest {
 
     @Mock
-    ExamenRepository repository;
+    ExamenRepositoryImpl repository;
 
     @Mock
-    PreguntaRepository preguntaRepository;
+    PreguntaRepositoryImpl preguntaRepository;
+
+    /*@Mock
+    ExamenRepositoryImpl examenRepositoryImpl;
+
+    @Mock
+    PreguntaRepositoryImpl preguntaRepositoryImpl;*/
 
     @InjectMocks
     ExamenServiceImpl service;
@@ -267,5 +276,33 @@ class ExamenServiceImplTest {
 
         verify(repository).guardar(any(Examen.class));
         verify(preguntaRepository).guardarVarias(anyList());
+    }
+
+    @Test
+    void testDoCallRealMethod() {
+        when(repository.findAll()).thenReturn(Datos.EXAMENES);
+        doCallRealMethod().when(preguntaRepository).findPreguntasPorExamenid(anyLong());
+        Examen examen = service.findExamenPorNombreConPreguntas("Matematicas");
+        assertEquals(5L, examen.getId());
+        assertEquals("Matematicas", examen.getNombre());
+    }
+
+    @Test
+    void testSpy() {
+        ExamenRepository examenRepository = spy(ExamenRepositoryImpl.class);
+        PreguntaRepository preguntaRepository = spy(PreguntaRepositoryImpl.class);
+
+        List<String> preguntas = Arrays.asList("trigomometría");
+//        when(preguntaRepository.findPreguntasPorExamenid(anyLong())).thenReturn(preguntas);
+        doReturn(preguntas).when(preguntaRepository).findPreguntasPorExamenid(anyLong());
+        ExamenService examenService = new ExamenServiceImpl(examenRepository, preguntaRepository);
+        Examen examen = examenService.findExamenPorNombreConPreguntas("Matematicas");
+        assertEquals(5L, examen.getId());
+        assertEquals("Matematicas", examen.getNombre());
+        assertEquals(1, examen.getPreguntas().size());
+        assertTrue(examen.getPreguntas().contains("trigomometría"));
+
+        verify(examenRepository).findAll();
+        verify(preguntaRepository).findPreguntasPorExamenid(anyLong());
     }
 }
